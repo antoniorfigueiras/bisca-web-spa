@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/views/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

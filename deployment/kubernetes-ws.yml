@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: websocket-server
+  namespace: dad-group-12
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: websocket-server
+  template:
+    metadata:
+      labels:
+        app: websocket-server
+    spec:
+      containers:
+        - name: websocket-server
+          # Garante que esta é a imagem mais recente que fizeste build
+          image: registry-172.22.21.115.sslip.io/dad-group-12/ws:v2.1.0 
+          ports:
+            - containerPort: 3000   
+          env:
+            # CORREÇÃO 1: O nome tem de ser SOCKET_PORT (igual ao teu index.js)
+            - name: SOCKET_PORT
+              value: "3000"
+            # CORREÇÃO 2: Adicionar o URL do frontend (com traços) para o CORS
+            - name: CLIENT_URL
+              value: "http://web-dad-group-12-172.22.21.253.sslip.io"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: websocket-server
+  namespace: dad-group-12
+spec:
+  ports:
+    - port: 80           # O Ingress entra aqui
+      targetPort: 3000   # O Service entrega aqui (agora o Node vai estar a ouvir aqui!)
+  selector:
+    app: websocket-server

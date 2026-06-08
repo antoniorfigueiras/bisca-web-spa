@@ -1,0 +1,25 @@
+{
+  "name": "bisca-socket-server",
+  "version": "1.0.0",
+  "description": "Servidor WebSocket para o jogo da Bisca",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "bisca",
+    "websocket",
+    "socket.io",
+    "vue"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "socket.io": "^4.8.1"
+  }
+}

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vue-app
+  namespace: dad-group-12
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vue-app
+  template:
+    metadata:
+      labels:
+        app: vue-app
+    spec:
+      priorityClassName: low-priority
+      containers:
+        - name: web
+          image: registry-172.22.21.115.sslip.io/dad-group-12/web:v2.1.0
+          ports:
+            - containerPort: 80   # ADICIONADO: Explicitamos a porta
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"     # ALTERADO: Subimos para evitar crashes
+              cpu: "200m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vue-app
+  namespace: dad-group-12
+spec:
+  ports:
+    - port: 80
+      targetPort: 80   # ADICIONADO: Garante que bate na porta certa
+  selector:
+    app: vue-app
+
+---
+# ESTA É A PARTE QUE TE FALTAVA
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vue-app-ingress
+  namespace: dad-group-12
+  annotations:
+    # Esta anotação é comum em clusters académicos/k3s (Traefik)
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: web-dad-group-12.172.22.21.253.sslip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vue-app
+                port:
+                  number: 80

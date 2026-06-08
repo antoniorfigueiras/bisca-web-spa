@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-db
+  namespace: dad-group-12
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-db
+  template:
+    metadata:
+      labels:
+        app: mysql-db
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "dad"
+            - name: MYSQL_DATABASE
+              value: "dad"
+            - name: MYSQL_USER
+              value: "dad"
+            - name: MYSQL_PASSWORD
+              value: "dad"
+          resources:
+            requests:
+              memory: "256Mi"
+            limits:
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql    # <--- Este é o nome que o Laravel vai procurar
+  namespace: dad-group-12
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: mysql-db

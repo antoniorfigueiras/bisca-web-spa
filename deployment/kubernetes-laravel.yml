@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel-app
+  namespace: dad-group-12
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: laravel-app
+  template:
+    metadata:
+      labels:
+        app: laravel-app
+    spec:
+      priorityClassName: high-priority
+      containers:
+        - name: api
+          image: registry-172.22.21.115.sslip.io/dad-group-12/api:v2.3.0
+          # ADICIONEI: Porta do contentor
+          ports:
+            - containerPort: 80
+          # ADICIONEI: Configuração da Base de Dados
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: APP_DEBUG
+              value: "true"
+            - name: DB_CONNECTION
+              value: "mysql"          # <--- MUDAR PARA MYSQL
+            - name: DB_HOST
+              value: "mysql"          # <--- Nome do serviço MySQL no cluster
+            - name: DB_PORT
+              value: "3306"           # <--- Porta do MySQL
+            - name: DB_DATABASE
+              value: "dad"            # (Confirma no teu deployment do MySQL)
+            - name: DB_USERNAME
+              value: "dad"            # (Confirma no teu deployment do MySQL)
+            - name: DB_PASSWORD
+              value: "dad"            # (Confirma no teu deployment do MySQL)
+            - name: APP_URL
+              value: "http://api-dad-group-12-172.22.21.253.sslip.io"
+            
+            # ISTO É CRÍTICO PARA O CORS FUNCIONAR:
+            - name: SANCTUM_STATEFUL_DOMAINS
+              value: "web-dad-group-12-172.22.21.253.sslip.io"
+            
+            - name: SESSION_DOMAIN
+              value: ".sslip.io"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: laravel-app
+  namespace: dad-group-12
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: laravel-app
